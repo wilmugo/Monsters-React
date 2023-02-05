@@ -3,6 +3,7 @@ import './App.css';
 
 class App extends Component {
   constructor() {
+    console.log('constructor');
     super();
 
     this.state = {
@@ -11,6 +12,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log('componentedidmount');
     fetch('https://jsonplaceholder.typicode.com/users')
       .then((response) => response.json())
       .then((users) =>
@@ -26,8 +28,38 @@ class App extends Component {
   }
 
   render() {
+    console.log('render');
     return (
       <div className="App">
+        <input
+          type="search"
+          className="search-box"
+          placeholder="search monsters"
+          onChange={(event) => {
+            console.log(event.target.value);
+            const stringch = event.target.value.toLocaleLowerCase();
+            if (stringch) {
+              const searchRes = this.state.monsters.filter(
+                (monster) => {
+                  return monster.name
+                    .toLocaleLowerCase()
+                    .includes(stringch);
+                }
+              );
+              this.setState(() => {
+                return { monsters: searchRes };
+              });
+            } else {
+              fetch('https://jsonplaceholder.typicode.com/users')
+                .then((response) => response.json())
+                .then((users) =>
+                  this.setState(() => {
+                    return { monsters: users };
+                  })
+                );
+            }
+          }}
+        />
         {this.state.monsters.map((monster) => {
           return (
             <div key={monster.id}>
