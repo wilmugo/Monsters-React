@@ -8,6 +8,7 @@ class App extends Component {
 
     this.state = {
       monsters: [],
+      searchString: '',
     };
   }
 
@@ -16,19 +17,20 @@ class App extends Component {
     fetch('https://jsonplaceholder.typicode.com/users')
       .then((response) => response.json())
       .then((users) =>
-        this.setState(
-          () => {
-            return { monsters: users };
-          },
-          () => {
-            console.log(this.state);
-          }
-        )
+        this.setState(() => {
+          return { monsters: users };
+        })
       );
   }
 
   render() {
     console.log('render');
+    const searchRes = this.state.monsters.filter((monster) => {
+      return monster.name
+        .toLocaleLowerCase()
+        .includes(this.state.searchString);
+    });
+
     return (
       <div className="App">
         <input
@@ -36,31 +38,14 @@ class App extends Component {
           className="search-box"
           placeholder="search monsters"
           onChange={(event) => {
-            console.log(event.target.value);
-            const stringch = event.target.value.toLocaleLowerCase();
-            if (stringch) {
-              const searchRes = this.state.monsters.filter(
-                (monster) => {
-                  return monster.name
-                    .toLocaleLowerCase()
-                    .includes(stringch);
-                }
-              );
-              this.setState(() => {
-                return { monsters: searchRes };
-              });
-            } else {
-              fetch('https://jsonplaceholder.typicode.com/users')
-                .then((response) => response.json())
-                .then((users) =>
-                  this.setState(() => {
-                    return { monsters: users };
-                  })
-                );
-            }
+            const searchString =
+              event.target.value.toLocaleLowerCase();
+            this.setState(() => {
+              return { searchString };
+            });
           }}
         />
-        {this.state.monsters.map((monster) => {
+        {searchRes.map((monster) => {
           return (
             <div key={monster.id}>
               <h1>{monster.name}</h1>
